@@ -44,31 +44,52 @@ if(isset($_GET['id'])) {
                     echo "<li><a href='dettagli_evento.php?id=" . $row_eventi["id"] . "'>" . $row_eventi["descrizione"] . "</a></li>";
                 }
                 echo "</ul>";
-            } else {
+            } 
+            else {
                 echo "<h3>Eventi a cui ha partecipato:</h3>";
-
                 echo "L'atleta non ha partecipato a nessun evento.";
             }
-            
-// Query per selezionare le informazioni mediche dell'atleta
-$sql_informazioni_mediche = "SELECT * FROM informazioni_mediche WHERE fkAtleta = '$id_atleta'";
-$result_informazioni_mediche = $mydb->query($sql_informazioni_mediche);
 
-// Stampa le informazioni mediche dell'atleta
-if ($result_informazioni_mediche->num_rows > 0) {
-    echo "<h3>Informazioni mediche:</h3>";
-    echo "<ul>";
-    while($row_mediche = $result_informazioni_mediche->fetch_assoc()) {
-        echo "<li>Data e ora visita: " . $row_mediche["data_ora_visita"] . "<br>Tipo infortunio: " . $row_mediche["tipo_infortunio"] . "<br>Descrizione: " . $row_mediche["descrizione"] . "<br>Altre informazioni: " . $row_mediche["altre_informazioni"] . "</li>";
-    }
-    echo "</ul>";
-} else {
-    echo "<h3>Informazioni mediche:</h3>";
-    echo "<ul>";
-    echo "Nessuna informazione medica disponibile per questo atleta.";
-}
+            $sql_visita = "SELECT * FROM visita WHERE fkAtleta = '$id_atleta'";
+            $result_vis = $mydb->query($sql_visita);
+            // Stampa le informazioni mediche dell'atleta
+            if ($result_vis->num_rows>0) {
+                echo "<h3>Informazioni mediche:</h3>";
+                echo "<ul>";
+                while($row_vis = $result_vis->fetch_assoc()) {
+                    echo "<li>Scadenza visita medica: " . $row_vis["data_scadenza"] . "</li>";
+                }
+                echo "</ul>";
+                echo "<ul>";
+                echo "</ul>";
+            } 
+            else {
+                echo "<h3>Informazioni mediche:</h3>";
+                echo "<ul>";
+                echo "Visita medica sportiva non inserita";
+            }
+
+            $sql_infortunio = "SELECT * FROM infortunio INNER JOIN atleta ON infortunio.fkAtleta= atleta.id WHERE atleta.id = '$id_atleta'";
+            $result_inf = $mydb->query($sql_infortunio);
+        if ($result_inf->num_rows > 0 && $result_vis->num_rows > 0) {
+            echo "<ul>";
+            while ($row_inf = $result_inf->fetch_assoc()) {
+                echo "<a href='dettaglio_infortunio.php?id=" . $row_inf["id"] . "'>";
+                echo "<li>Tipologia: " . $row_inf["descrizione"] . "</li>";
+                echo "</a>";
+            }
+            echo "</ul>";
+        } else {
+            echo "<h3>Informazioni mediche:</h3>";
+            echo "<ul>";
+            echo "<li>Nessuna informazione medica disponibile per questo atleta.</li>";
+            echo "</ul>";
         }
-    } else {
+
+
+}
+    }
+     else {
         echo "Atleta non trovato";
     }
     $mydb->close();
@@ -76,7 +97,7 @@ if ($result_informazioni_mediche->num_rows > 0) {
     echo "ID dell'atleta non specificato";
 }
 ?>
-<br><p><a href='nuovo_evento.php'><button>inserisci nuovo evento</button></a></p>
+
 <br><a href="modifica_atleta.php?id=<?php echo $id_atleta; ?>"><button>Modifica Dettagli Atleta</button></a>
 <br>
 <br><form method="post" action="elimina_atleta.php">
