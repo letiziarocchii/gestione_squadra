@@ -34,6 +34,12 @@ body {
   justify-content: space-between;
 }
 
+.Main__header .Back,
+.Main__header .Home {
+  height: 50px;
+  cursor: pointer;
+}
+
 .Search {
   height: 40px;
   flex: 1;
@@ -82,7 +88,7 @@ input {
 
 .Button img {
   width: 20px;
-  padding-right: 5px;
+  padding-right: 10px;
 }
 
 .Container {
@@ -142,6 +148,9 @@ input {
   justify-content: center;
   height: 120px;
   width: 120px;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--color);
 }
 
 .Card span {
@@ -153,13 +162,20 @@ input {
   fill: #fff;
 }
 
-.Main__body.Nuovo_Atleta .form {
+.Main__body .form {
   padding: 50px 0;
 }
-.Main__body.Nuovo_Atleta .form input[type="text"],
-.Main__body.Nuovo_Atleta .form input[type="date"] {
+.Main__body .form input[type="text"],
+.Main__body .form input[type="datetime-local"],
+.Main__body .form input[type="date"] {
   height: 30px;
   padding-left: 5px;
+}
+
+.Main__body.Dettagli_Evento .form input[type="text"],
+.Main__body.Dettagli_Evento .form input[type="datetime-local"],
+.Main__body.Dettagli_Evento .form input[type="date"] {
+  width: 400px;
 }
 
 .form {
@@ -180,7 +196,7 @@ input {
   margin-top: 10px;
 }
 
-.Main__body.Nuovo_Atleta .form a {
+.Main__body .form a {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -189,4 +205,25 @@ input {
 .Error {
   visibility: hidden;
   color: red;
+}
+
+.Eventi li a {
+  color: var(--color);
+}
+
+table {
+  margin: 50px 0;
+}
+
+table td,
+table th {
+  padding: 0 10px;
+}
+
+table td {
+  padding-top: 5px;
+}
+
+.text_center {
+  text-align: center;
 }

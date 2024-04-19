@@ -1,8 +1,7 @@
 <?php
 // Verifica se sono stati inviati dati tramite il metodo POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Verifica se sono stati ricevuti tutti i dati necessari
-    if(isset($_POST['id']) && isset($_POST['tipo']) && isset($_POST['data_ora_inizio']) && isset($_POST['durata']) && isset($_POST['descrizione']) && isset($_POST['luogo'])) {
+    if (isset($_POST['id'])) {
         // Prendi l'ID dell'evento e gli altri dati inviati dal modulo
         $id_evento = $_POST['id'];
         $tipo = $_POST['tipo'];
@@ -10,39 +9,64 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $durata = $_POST['durata'];
         $descrizione = $_POST['descrizione'];
         $luogo = $_POST['luogo'];
-        
-        // Connessione al database
-        require("config.php");  // File di configurazione per la connessione al database
-        $mydb = new mysqli(SERVER, UTENTE, PASSWORD, DATABASE);
-        if ($mydb->connect_errno) {
-            echo "Errore nella connessione a MySQL: (" . $mydb->connect_errno . ") " . $mydb->connect_error;
-            exit();  // Termina lo script
+
+        $errore = '';
+
+        if (empty($tipo)) {
+            $errore .= "tipo";
         }
-        
-        // Prepara i dati per l'inserimento nel database
-        $tipo = $mydb->real_escape_string($tipo);
-        $data_ora_inizio = $mydb->real_escape_string($data_ora_inizio);
-        $durata = $mydb->real_escape_string($durata);
-        $descrizione = $mydb->real_escape_string($descrizione);
-        $luogo = $mydb->real_escape_string($luogo);
-        
-        // Query per aggiornare i dettagli dell'evento nel database
-        $sql_aggiorna_evento = "UPDATE evento SET tipo = '$tipo', data_ora_inizio = '$data_ora_inizio', durata = '$durata', descrizione = '$descrizione', luogo = '$luogo' WHERE id = '$id_evento'";
-        
-        // Esegui la query di aggiornamento
-        if ($mydb->query($sql_aggiorna_evento) === TRUE) {
-            echo "Modifiche salvate con successo.";
+        if (empty($data_ora_inizio)) {
+            $errore .= " data_ora_inizio";
+        }
+        if (empty($durata)) {
+            $errore .= " durata";
         } else {
-            echo "Errore durante il salvataggio delle modifiche: " . $mydb->error;
+            if ($durata <= 0) {
+                $errore .= " durataL";
+            }
         }
-        
-        // Chiudi la connessione al database
-        $mydb->close();
+        if (empty($descrizione)) {
+            $errore .= " descrizione";
+        }
+        if (empty($luogo)) {
+            $errore .= " luogo";
+        }
+        if (!empty($errore)) {
+            echo json_encode(array('type' => 'Param_Error', 'value' => $errore));
+        } else {
+
+            // Connessione al database
+            require("config.php");  // File di configurazione per la connessione al database
+            $mydb = new mysqli(SERVER, UTENTE, PASSWORD, DATABASE);
+            if ($mydb->connect_errno) {
+                echo json_encode(array('type' => 'Error', 'value' => "Errore nella connessione a MySQL: (" . $mydb->connect_errno . ") " . $mydb->connect_error));
+                exit();  // Termina lo script
+            }
+
+            // Prepara i dati per l'inserimento nel database
+            $tipo = $mydb->real_escape_string($tipo);
+            $data_ora_inizio = $mydb->real_escape_string($data_ora_inizio);
+            $durata = $mydb->real_escape_string($durata);
+            $descrizione = $mydb->real_escape_string($descrizione);
+            $luogo = $mydb->real_escape_string($luogo);
+
+            // Query per aggiornare i dettagli dell'evento nel database
+            $sql_aggiorna_evento = "UPDATE evento SET tipo = '$tipo', data_ora_inizio = '$data_ora_inizio', durata = '$durata', descrizione = '$descrizione', luogo = '$luogo' WHERE id = '$id_evento'";
+
+            // Esegui la query di aggiornamento
+            if ($mydb->query($sql_aggiorna_evento) === TRUE) {
+                echo json_encode(array('type' => 'Success', 'value' => 'Modifiche salvate con successo'));
+            } else {
+                echo json_encode(array('type' => 'Error', 'value' => "Errore durante il salvataggio delle modifiche: " . $mydb->error));
+            }
+
+            // Chiudi la connessione al database
+            $mydb->close();
+        }
     } else {
-        echo "Non tutti i dati necessari sono stati ricevuti.";
+        header("Location: home.php"); // Cambia "index.php" con la pagina a cui vuoi reindirizzare l'utente
+        exit();
     }
 } else {
-    echo "Metodo di richiesta non valido.";
+    echo json_encode(array('type' => 'Error', 'value' => "Metodo di richiesta non valido."));
 }
-?>
-<a href='elenco_atleti.php'><button>Indietro</button></a>

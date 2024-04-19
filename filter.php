@@ -21,10 +21,10 @@ if (count($filtered) === 0) {
 } else {
     foreach ($filtered as $row) {
         echo "
-        <div class='Card'>
+        <a class='Card' href='dettagli_atleta.php?id=" . $row[0] . "'>
         <img src='./images/user.svg' alt='user photo' loading='lazy' />
         <span>" . $row[1] . "</span>
         <span>" . $row[2] . "</span>
-        </div>";
+        </a>";
     }
 }

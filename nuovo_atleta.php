@@ -8,6 +8,22 @@
     <link rel="icon" href="./images/logo.svg" type="image/icon type">
     <link rel="stylesheet" href="./css/style.css">
     <script>
+        function clear() {
+            const nome = document.getElementById('nome');
+            const cognome = document.getElementById('cognome');
+            const data_nascita = document.getElementById('data_nascita');
+            const ruolo = document.getElementById('ruolo');
+            nome.value = '';
+            cognome.value = '';
+            data_nascita.value = '';
+            ruolo.value = '';
+        }
+
+        function back_home() {
+            clear()
+            window.location.href = 'home.php'
+        }
+
         function submit() {
             console.log('submit')
             const Error__nome = document.getElementById('Error__nome')
@@ -46,11 +62,7 @@
                         })
                     } else if (res['type'] === 'Success') {
                         alert(res['value'])
-                        nome.value = '';
-                        cognome.value = '';
-                        data_nascita.value = '';
-                        ruolo.value = '';
-                        window.location.href = 'home.php'
+                        back_home()
                     } else if (res['type'] === 'Error') {
                         alert(res['value'])
                     } else {
@@ -75,6 +87,7 @@
         <div class="Main__container">
             <div class="Main__header">
                 <h1>Aggiungi nuovo atleta</h1>
+                <img onclick='back_home()' class='Home' src="./images/home.svg" alt="Home" />
             </div>
             <div class="Main__body Nuovo_Atleta">
                 <div class="form">
@@ -85,7 +98,7 @@
                     Data di nascita: <input type="date" name="data_nascita" id="data_nascita">
                     <span class='Error' id='Error__data_nascita'>Il campo data di nascita è obbligatorio</span>
                     Ruolo: <input type="text" autocomplete="off" name="ruolo" id="ruolo">
-                    <a class="Button" onclick="submit()">Aggiungi Atleta</a>
+                    <a class="Button" onclick="submit()"><img src="./images/add.svg" alt="Add" />Aggiungi Atleta</a>
                 </div>
             </div>
         </div>
