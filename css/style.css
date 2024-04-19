@@ -1,0 +1,192 @@
+:root {
+  font-size: 16px;
+  font-family: Inter, sans-serif;
+  --background-primary: #1f2430;
+  --background-secondary: #252b39;
+  --color: #767f8d;
+  --blu: #3772ff;
+  /* --blu: #5EB1BF; */
+  --orange: #ff4d00;
+  --button-primary: #274af2;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: var(--color);
+  background-color: var(--background-primary);
+  font-size: 16px;
+}
+
+.blu {
+  color: var(--blu);
+}
+
+.orange {
+  color: var(--orange);
+}
+
+.Main__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.Search {
+  height: 40px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+input {
+  outline: none;
+  appearance: none;
+  border: none;
+  border-radius: 5px;
+}
+
+.Search input[type="text"] {
+  height: 100%;
+  width: 65%;
+  padding-left: 40px;
+}
+
+.Search__Search_icon {
+  height: 20px;
+  position: relative;
+  left: 30px;
+}
+
+.Search__Cancel_icon {
+  height: 20px;
+  position: relative;
+  right: 30px;
+  cursor: pointer;
+}
+
+.Button {
+  background-color: var(--button-primary);
+  color: white;
+  padding: 11px 25px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.Button img {
+  width: 20px;
+  padding-right: 5px;
+}
+
+.Container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.Header__container {
+  background-color: var(--background-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.Header__title {
+  font-weight: bold;
+  font-size: 32px;
+}
+
+.Main__container {
+  width: 80%;
+  padding: 20px;
+}
+
+.Main__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.Main__body {
+  border: 1px solid var(--blu);
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.NoData {
+  width: 100%;
+  text-align: center;
+  padding: 30px;
+}
+
+.Card {
+  background-color: var(--background-secondary);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 10px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  width: 120px;
+}
+
+.Card span {
+  margin-top: 5px;
+}
+
+.Card img {
+  width: 70px;
+  fill: #fff;
+}
+
+.Main__body.Nuovo_Atleta .form {
+  padding: 50px 0;
+}
+.Main__body.Nuovo_Atleta .form input[type="text"],
+.Main__body.Nuovo_Atleta .form input[type="date"] {
+  height: 30px;
+  padding-left: 5px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form span,
+.form input {
+  margin-bottom: 10px;
+}
+
+.form input {
+  margin-top: 2px;
+}
+
+.form a {
+  margin-top: 10px;
+}
+
+.Main__body.Nuovo_Atleta .form a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Error {
+  visibility: hidden;
+  color: red;
+}
