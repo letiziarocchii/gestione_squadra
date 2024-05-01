@@ -226,4 +226,57 @@ table td {
 
 .text_center {
   text-align: center;
+  align-content: center;
+}
+
+.errori.text_center span,
+.punti.text_center span {
+  margin: auto;
+}
+
+select,
+input[type="number"] {
+  width: 100%;
+  display: inline;
+  height: 30px;
+  outline: none;
+  border: none;
+  border-radius: 5px;
+  padding-left: 5px;
+}
+
+.Stats__action .Button {
+  justify-content: center;
+  padding: 0;
+}
+
+.Stats__action .Button img {
+  width: 20px;
+  padding-right: 0;
+}
+
+.Stats__action .Button:not(:first-child) {
+  margin-left: 15px;
+}
+
+.Stats__action {
+  background-color: var(--button-primary);
+  color: white;
+  padding: 0 25px;
+  height: 32px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Stats__add_inputs,
+.Stats__action_state_2 {
+  display: none;
+}
+
+.tbl_stat_input {
+  display: none !important;
+  background-color: #e5e596;
 }

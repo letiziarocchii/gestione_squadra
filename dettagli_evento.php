@@ -118,16 +118,100 @@
         }
 
         function delete_evento() {
+            if (confirm('Sei sicuro di voler eliminare questo evento?')) {
+                const id_evento = document.getElementById('id_evento').value;
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        let res;
+                        try {
+                            res = JSON.parse(this.responseText)
+                            alert(res['value'])
+                            if (res['type'] === 'Success') {
+                                window.location.href = 'home.php'
+                            }
+                        } catch (e) {
+                            alert(this.responseText)
+                        }
+                    }
+                }
+
+                xmlhttp.open("POST", "elimina_evento.php", false);
+                xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xmlhttp.send("id=" + id_evento);
+            }
+
+        }
+
+        function handleAddStat() {
+            var elements = document.getElementsByClassName('Stats__add_inputs');
+            try {
+                Array.from(elements).forEach((el) => {
+                    el.style = 'display:table-row';
+                })
+
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
+        function handleCancelStat() {
+            var elements = document.getElementsByClassName('Stats__add_inputs');
+            try {
+                Array.from(elements).forEach((el) => {
+                    el.style = 'display:none';
+                })
+
+                const Error__pt_fatti = document.getElementById('Error__pt_fatti');
+                const Error__pt_errori = document.getElementById('Error__pt_errori');
+
+                Error__pt_fatti.style.visibility = 'hidden';
+                Error__pt_errori.style.visibility = 'hidden';
+
+                const pt_fatti = document.getElementById('pt_fatti');
+                const pt_errori = document.getElementById('pt_errori');
+                pt_fatti.value = 0;
+                pt_errori.value = 0;
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
+        function handleSaveNewStat() {
             const id_evento = document.getElementById('id_evento').value;
+            const atleta = document.getElementById('atleta').value;
+            const pt_fatti = document.getElementById('pt_fatti').value;
+            const pt_errori = document.getElementById('pt_errori').value;
+
+            const Error__pt_fatti = document.getElementById('Error__pt_fatti');
+            const Error__pt_errori = document.getElementById('Error__pt_errori');
+
+            Error__pt_fatti.style.visibility = 'hidden';
+            Error__pt_errori.style.visibility = 'hidden';
+
+
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     let res;
                     try {
                         res = JSON.parse(this.responseText)
-                        alert(res['value'])
-                        if (res['type'] === 'Success') {
-                            window.location.href = 'home.php'
+                        if (res['type'] === 'Param_Error') {
+                            let items = res['value'].trim().split(' ')
+                            items.forEach(item => {
+                                if (item === 'pt_fatti') {
+                                    Error__pt_fatti.style.visibility = 'visible'
+                                } else if (item === 'pt_errori') {
+                                    Error__pt_errori.style.visibility = 'visible'
+                                }
+                            })
+                        } else if (res['type'] === 'Success') {
+                            alert(res['value'])
+                            window.location.reload();
+                        } else if (res['type'] === 'Error') {
+                            alert(res['value'])
+                        } else {
+                            alert(res)
                         }
                     } catch (e) {
                         alert(this.responseText)
@@ -135,9 +219,103 @@
                 }
             }
 
-            xmlhttp.open("POST", "elimina_evento.php", false);
+            xmlhttp.open("POST", "nuova_statistica_atleta.php", false);
             xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xmlhttp.send("id=" + id_evento);
+            xmlhttp.send("id=" + id_evento + "&atleta=" + atleta + "&pt_fatti=" + pt_fatti + "&pt_errori=" + pt_errori);
+        }
+
+        function handle_row_update(num) {
+            const el = document.getElementById("errori_" + num);
+            const el2 = document.getElementById("sp_errori_" + num);
+            const el3 = document.getElementById("punti_" + num);
+            const el4 = document.getElementById("sp_punti_" + num);
+            el.style = "display:table-cell !important;";
+            el3.style = "display:table-cell !important;";
+            el2.style = "display:none";
+            el4.style = "display:none";
+            const btns1 = document.getElementById("Stats__action_state_1_" + num);
+            const btns2 = document.getElementById("Stats__action_state_2_" + num);
+            btns2.style = 'display:flex';
+            btns1.style = 'display:none';
+        }
+
+        function handle_row_cancel(num) {
+            const el = document.getElementById("errori_" + num);
+            const el2 = document.getElementById("sp_errori_" + num);
+            const el3 = document.getElementById("punti_" + num);
+            const el4 = document.getElementById("sp_punti_" + num);
+            el2.style = "display:block !important;";
+            el4.style = "display:block !important;";
+            el3.style = "display:none !important";
+            el.style = "display:none !important";
+            const btns1 = document.getElementById("Stats__action_state_1_" + num);
+            const btns2 = document.getElementById("Stats__action_state_2_" + num);
+            btns1.style = 'display:flex';
+            btns2.style = 'display:none';
+        }
+
+        function handleUpdateStat(num) {
+            console.log(num)
+            const pt_fatti = document.getElementById('punti_' + num).value;
+            const pt_errori = document.getElementById('errori_' + num).value;
+
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    let res;
+                    try {
+                        res = JSON.parse(this.responseText)
+                        if (res['type'] === 'Param_Error') {
+                            let items = res['value'].trim().split(' ')
+                            items.forEach(item => {
+                                if (item === 'pt_fatti') {
+                                    alert("Il campo 'punti segnati' deve essere >= di 0")
+                                } else if (item === 'pt_errori') {
+                                    alert("Il campo 'errori' deve essere >= di 0")
+                                }
+                            })
+                        } else if (res['type'] === 'Success') {
+                            alert(res['value'])
+                            window.location.reload();
+                        } else if (res['type'] === 'Error') {
+                            alert(res['value'])
+                        } else {
+                            alert(res)
+                        }
+                    } catch (e) {
+                        alert(this.responseText)
+                    }
+                }
+            }
+
+            xmlhttp.open("POST", "modifica_statistica_atleta.php", false);
+            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xmlhttp.send("id=" + num + "&pt_fatti=" + pt_fatti + "&pt_errori=" + pt_errori);
+        }
+
+        function handleDeleteStat(num) {
+            if (confirm('Sei sicuro di voler eliminare le statistiche di questo atleta?')) {
+                const id_evento = document.getElementById('id_evento').value;
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        let res;
+                        try {
+                            res = JSON.parse(this.responseText)
+                            alert(res['value'])
+                            if (res['type'] === 'Success') {
+                                window.location.reload();
+                            }
+                        } catch (e) {
+                            alert(this.responseText)
+                        }
+                    }
+                }
+
+                xmlhttp.open("POST", "elimina_statistica_atleta.php", false);
+                xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xmlhttp.send("id=" + num);
+            }
         }
     </script>
 </head>
@@ -202,8 +380,6 @@
                             <a class="Button" onclick="change_state()" id='btnUpdate'><img src="./images/update.svg" alt="Update user" />Modifica</a>
                         </div>
                 <?php
-                        // echo "<p>Tipo: " . $row_evento["tipo"] . "<br>Data e ora inizio: " . $row_evento["data_ora_inizio"] . "<br>Duarata in minuti: " . $row_evento["durata"] . "<br>Descrizione: " . $row_evento["descrizione"] . "<br>Luogo: " . $row_evento["luogo"] . "</p>";
-                        // echo "<p>Punti segnati: " . $row_evento["punti_segnati"] . "<br>Errori: " . $row_evento["errori"] . "<br>Percentuale successo: " . round(($row_evento["punti_segnati"] / ($row_evento["punti_segnati"] + $row_evento["errori"]) * 100), 2) . "%</p>";
                     } else {
                         echo "Evento non trovato";
                     }
@@ -217,6 +393,10 @@
         <div class="Main__container">
             <div class="Main__header">
                 <h1>Statistiche</h1>
+                <div class="Button" onclick="handleAddStat()">
+                    <img src="./images/add.svg" alt="Add athlete" />
+                    Aggiungi Atleta
+                </div>
             </div>
             <div class="Main__body Dettagli_Evento">
                 <?php
@@ -236,16 +416,65 @@
 
                     // Query per selezionare l'evento con l'ID specificato
                     // $sql_evento = "SELECT * FROM partecipa WHERE fkEvento = '$id_evento'";
-                    $sql_evento = "SELECT nome, cognome, punti_segnati, errori FROM partecipa INNER JOIN atleta ON partecipa.fkAtleta = atleta.id WHERE partecipa.fkEvento = '$id_evento'";
+                    $sql_evento = "SELECT partecipa.id, nome, cognome, punti_segnati, errori FROM partecipa INNER JOIN atleta ON partecipa.fkAtleta = atleta.id WHERE partecipa.fkEvento = '$id_evento' ORDER BY (punti_segnati/(punti_segnati+errori)) desc, cognome, nome";
                     $result_evento = $mydb->query($sql_evento);
 
                     // Verifica se ci sono risultati nella query
                     if ($result_evento && $result_evento->num_rows > 0) {
                         // Stampa i dettagli dell'evento
-                        echo "<table><thead><tr><th>Cognome</th><th>Nome</th><th>Punti segnati</th><th>Errori</th><th>Percentuale successo</th></tr></thead><tbody>";
+                        echo "<table><thead><tr><th>Cognome</th><th>Nome</th><th>Punti segnati</th><th>Errori</th><th>Percentuale successo</th><th></th></tr></thead><tbody>";
                         while ($row_evento = $result_evento->fetch_assoc()) {
+                ?>
+                            <tr>
+                                <td><?php echo $row_evento['cognome'] ?></td>
+                                <td><?php echo $row_evento['nome'] ?></td>
+                                <td class='text_center punti'>
+                                    <input class='tbl_stat_input' type='number' min='0' <?php echo "name='punti_" . $row_evento["id"] . "' id='punti_" . $row_evento["id"] . "' value='" . $row_evento["punti_segnati"] . "'" ?>>
+                                    <?php echo "<span class='text_center' id='sp_punti_" . $row_evento["id"] . "'>" . $row_evento["punti_segnati"] . "</span>" ?>
+                                </td>
+                                <td class='text_center errori'>
+                                    <input class='tbl_stat_input' type='number' min='0' <?php echo "name='errori_" . $row_evento["id"] . "' id='errori_" . $row_evento["id"] . "' value='" . $row_evento["errori"] . "'" ?>>
+                                    <?php echo "<span class='text_center' id='sp_errori_" . $row_evento["id"] . "'>" . $row_evento["errori"] . "</span>" ?>
+                                </td>
+                                <td class='text_center'><?php echo round(($row_evento["punti_segnati"] / ($row_evento["punti_segnati"] + $row_evento["errori"])) * 100, 2) . " % " ?></td>
+                                <td>
+                                    <div class='Stats__action Stats__action_state_1' id='Stats__action_state_1_<?php echo $row_evento["id"] ?>'><a onclick='handle_row_update(<?php echo $row_evento["id"] ?>)' class='Button' id='btnUpdateStat'><img src='./images/update.svg' alt='Update stat' /></a><a class='Button' onclick='handleDeleteStat(<?php echo $row_evento["id"] ?>)'><img src='./images/delete.svg' alt='Delete stat' /></a></div>
+                                    <div class='Stats__action Stats__action_state_2' id='Stats__action_state_2_<?php echo $row_evento["id"] ?>'><a class='Button' id='btnSaveStats' onclick='handleUpdateStat(<?php echo $row_evento["id"] ?>)'><img src='./images/save.svg' /></a><a class='Button' id='btnCancelStats' onclick='handle_row_cancel(<?php echo $row_evento["id"] ?>)'><img src='./images/cancel_white.svg' /></a></div>
+                                </td>
+                            </tr>
+                        <?php
+                        }
 
-                            echo "<tr><td>" . $row_evento["cognome"] . "</td><td>" . $row_evento["nome"] . "</td><td class='text_center'>" . $row_evento["punti_segnati"] . "</td><td class='text_center'>" . $row_evento["errori"] . "</td><td class='text_center'>" . round(($row_evento["punti_segnati"] / ($row_evento["punti_segnati"] + $row_evento["errori"])) * 100, 2) . " %</td></tr>";
+                        $sql_atleti_new = "SELECT id, nome, cognome FROM atleta WHERE id NOT IN (SELECT fkatleta FROM partecipa INNER JOIN atleta ON partecipa.fkAtleta = atleta.id WHERE partecipa.fkEvento = '$id_evento') ORDER BY cognome, nome";
+                        $result_atleti = $mydb->query($sql_atleti_new);
+                        if ($result_atleti && $result_atleti->num_rows > 0) {
+                        ?>
+                            <tr class="Stats__add_inputs">
+                                <td colspan=2>
+                                    <select name="atleta" id="atleta">
+                                        <?php
+                                        while ($row_atleta = $result_atleti->fetch_assoc()) {
+                                            echo "<option value='" . $row_atleta["id"] . "'>" . $row_atleta["cognome"] . " " . $row_atleta["nome"] . "</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                </td>
+                                <td><input type="number" min="0" name="pt_fatti" id="pt_fatti" value='0'></td>
+                                <td><input type="number" min="0" name="pt_errori" id="pt_errori" value='0'></td>
+                                <td></td>
+                                <td>
+                                    <div class="Stats__action"><a class="Button" id='btnAddStats' onclick="handleSaveNewStat()"><img src="./images/add.svg" alt="Add user stat" /></a><a class="Button" id='btnCancelStats' onclick="handleCancelStat()"><img src="./images/cancel_white.svg" alt="Cancel user stat" /></a></div>
+                                </td>
+                            </tr>
+                            <tr class="Stats__add_inputs">
+                                <td></td>
+                                <td></td>
+                                <td><span class='Error' id='Error__pt_fatti'>Il campo 'punti segnati' deve essere >= di 0</span></td>
+                                <td><span class='Error' id='Error__pt_errori'>Il campo 'errori' deve essere >= di 0</span></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                <?php
                         }
                         echo "</tbody></table>";
                     } else {
@@ -259,14 +488,6 @@
             </div>
         </div>
     </div>
-    <a href="modifica_evento.php?id=<?php echo $id_evento; ?>"><button>Modifica Dettagli evento</button></a>
-    <form metheadod="post" action="elimina_evento.php">
-        <input type="hidden" name="id" value="<?php echo $id_evento; ?>">
-        <input type="submit" value="Elimina Evento" onclick="return confirm('Sei sicuro di voler eliminare questo evento?');">
-    </form>
-
-    <a href='elenco_atleti.php'><button>Indietro</button></a>
-
 </body>
 
 </html>
