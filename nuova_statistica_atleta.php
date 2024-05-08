@@ -10,11 +10,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $errore = '';
 
-        if (empty($pt_fatti)) {
+        if ($pt_fatti < 0) {
             $errore .= "pt_fatti";
         }
 
-        if (empty($pt_errori)) {
+        if ($pt_errori < 0) {
             $errore .=  ' pt_errori';
         }
 

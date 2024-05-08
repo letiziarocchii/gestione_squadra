@@ -424,8 +424,8 @@
 
                     // Verifica se ci sono risultati nella query
                     if ($result_evento && $result_evento->num_rows > 0) {
-                        // Stampa i dettagli dell'evento
                         echo "<table><thead><tr><th>Cognome</th><th>Nome</th><th>Punti segnati</th><th>Errori</th><th>Percentuale successo</th><th></th></tr></thead><tbody>";
+                        // Stampa i dettagli dell'evento
                         while ($row_evento = $result_evento->fetch_assoc()) {
                 ?>
                             <tr>
@@ -439,7 +439,17 @@
                                     <input class='tbl_stat_input' type='number' min='0' <?php echo "name='errori_" . $row_evento["id"] . "' id='errori_" . $row_evento["id"] . "' value='" . $row_evento["errori"] . "'" ?>>
                                     <?php echo "<span class='text_center' id='sp_errori_" . $row_evento["id"] . "'>" . $row_evento["errori"] . "</span>" ?>
                                 </td>
-                                <td class='text_center'><?php echo round(($row_evento["punti_segnati"] / ($row_evento["punti_segnati"] + $row_evento["errori"])) * 100, 2) . " % " ?></td>
+                                <td class='text_center'>
+                                    <?php
+                                    $num = $row_evento["punti_segnati"];
+                                    $den = $row_evento["punti_segnati"] + $row_evento["errori"];
+                                    if ($den == 0 || $num == 0) {
+                                        echo "0 %";
+                                    } else {
+                                        echo round(($num / $den) * 100, 2) . " % ";
+                                    }
+                                    ?>
+                                </td>
                                 <td>
                                     <div class='Stats__action Stats__action_state_1' id='Stats__action_state_1_<?php echo $row_evento["id"] ?>'><a onclick='handle_row_update(<?php echo $row_evento["id"] ?>)' class='Button' id='btnUpdateStat'><img src='./images/update.svg' alt='Update stat' /></a><a class='Button' onclick='handleDeleteStat(<?php echo $row_evento["id"] ?>)'><img src='./images/delete.svg' alt='Delete stat' /></a></div>
                                     <div class='Stats__action Stats__action_state_2' id='Stats__action_state_2_<?php echo $row_evento["id"] ?>'><a class='Button' id='btnSaveStats' onclick='handleUpdateStat(<?php echo $row_evento["id"] ?>)'><img src='./images/save.svg' /></a><a class='Button' id='btnCancelStats' onclick='handle_row_cancel(<?php echo $row_evento["id"] ?>)'><img src='./images/cancel_white.svg' /></a></div>
@@ -469,6 +479,7 @@
                                     <div class="Stats__action"><a class="Button" id='btnAddStats' onclick="handleSaveNewStat()"><img src="./images/add.svg" alt="Add user stat" /></a><a class="Button" id='btnCancelStats' onclick="handleCancelStat()"><img src="./images/cancel_white.svg" alt="Cancel user stat" /></a></div>
                                 </td>
                             </tr>
+
                             <tr class="Stats__add_inputs">
                                 <td></td>
                                 <td></td>
@@ -477,11 +488,65 @@
                                 <td></td>
                                 <td></td>
                             </tr>
-                <?php
+                        <?php
                         }
                         echo "</tbody></table>";
                     } else {
-                        echo "Evento non trovato";
+                        ?>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Cognome</th>
+                                    <th>Nome</th>
+                                    <th>Punti segnati</th>
+                                    <th>Errori</th>
+                                    <th>Percentuale successo</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+
+
+                                $sql_atleti_new = "SELECT id, nome, cognome FROM atleta WHERE id NOT IN (SELECT fkatleta FROM partecipa INNER JOIN atleta ON partecipa.fkAtleta = atleta.id WHERE partecipa.fkEvento = '$id_evento') ORDER BY cognome, nome";
+                                $result_atleti = $mydb->query($sql_atleti_new);
+                                if ($result_atleti && $result_atleti->num_rows > 0) {
+                                ?>
+                                    <tr class="Stats__add_inputs">
+                                        <td colspan=2>
+                                            <select name="atleta" id="atleta">
+                                                <?php
+                                                while ($row_atleta = $result_atleti->fetch_assoc()) {
+                                                    echo "<option value='" . $row_atleta["id"] . "'>" . $row_atleta["cognome"] . " " . $row_atleta["nome"] . "</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                        </td>
+                                        <td><input type="number" min="0" name="pt_fatti" id="pt_fatti" value='0'></td>
+                                        <td><input type="number" min="0" name="pt_errori" id="pt_errori" value='0'></td>
+                                        <td></td>
+                                        <td>
+                                            <div class="Stats__action"><a class="Button" id='btnAddStats' onclick="handleSaveNewStat()"><img src="./images/add.svg" alt="Add user stat" /></a><a class="Button" id='btnCancelStats' onclick="handleCancelStat()"><img src="./images/cancel_white.svg" alt="Cancel user stat" /></a></div>
+                                        </td>
+                                    </tr>
+
+                                    <tr class="Stats__add_inputs">
+                                        <td></td>
+                                        <td></td>
+                                        <td><span class='Error' id='Error__pt_fatti'>Il campo 'punti segnati' deve essere >= di 0</span></td>
+                                        <td><span class='Error' id='Error__pt_errori'>Il campo 'errori' deve essere >= di 0</span></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                <?php
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                        <div class="NoData">
+                            Nessun atleta ha partecipato a questo evento
+                        </div>
+                <?php
                     }
                     $mydb->close();
                 } else {

@@ -102,15 +102,15 @@
             </div>
             <div class="Main__body Dettagli_Evento">
                 <div class="form">
-                    Tipo: <input type="text" name="tipo" id="tipo">
+                    Tipo: <input type="text" autocomplete="off" name="tipo" id="tipo">
                     <span class='Error' id='Error__tipo'>Il campo tipo è obbligatorio</span>
                     Data e ora: <input type="datetime-local" name="data_ora_inizio" id="data_ora_inizio">
                     <span class='Error' id='Error__data_ora_inizio'>Il campo data e ora è obbligatorio</span>
-                    Descrizione <input type="text" name="descrizione" id="descrizione">
+                    Descrizione <input autocomplete="off" type="text" name="descrizione" id="descrizione">
                     <span class='Error' id='Error__descrizione'>Il campo descrizione è obbligatorio</span>
-                    Luogo: <input type="text" name="luogo" id="luogo">
+                    Luogo: <input type="text" autocomplete="off" name="luogo" id="luogo">
                     <span class='Error' id='Error__luogo'>Il campo luogo è obbligatorio</span>
-                    Durata in minuti: <input type="number" min="0" name="durata" id="durata">
+                    Durata in minuti: <input type="number" autocomplete="off" min="0" name="durata" id="durata">
                     <span class='Error' id='Error__durata'>Il campo durata è obbligatorio</span>
                     <span class='Error' id='Error__durata2'>Il campo durata deve essere > 0</span>
                     <a class="Button" onclick="submit()"><img src="./images/add.svg" alt="Add" />Aggiungi Evento</a>
