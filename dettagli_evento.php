@@ -14,7 +14,11 @@
 
         function back_atleta() {
             const id_atleta = document.getElementById('id_atleta').value;
-            window.location.href = 'dettagli_atleta.php?id=' + id_atleta
+            if (id_atleta === '' || id_atleta === undefined || id_atleta === null) {
+                back_home();
+            } else {
+                window.location.href = 'dettagli_atleta.php?id=' + id_atleta
+            }
         }
 
         function change_state() {
@@ -295,7 +299,6 @@
 
         function handleDeleteStat(num) {
             if (confirm('Sei sicuro di voler eliminare le statistiche di questo atleta?')) {
-                const id_evento = document.getElementById('id_evento').value;
                 var xmlhttp = new XMLHttpRequest();
                 xmlhttp.onreadystatechange = function() {
                     if (this.readyState == 4 && this.status == 200) {

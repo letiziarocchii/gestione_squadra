@@ -1,67 +1,62 @@
 <?php
 require("config.php");
 
+
+// Verifica se il modulo è stato inviato
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Recupera i valori dal modulo
-    $fkAtleta= $_POST["fkAtleta"];
     $tipo = $_POST["tipo"];
     $data_ora_inizio = $_POST["data_ora_inizio"];
+    $durata = intval($_POST["durata"]);
     $descrizione = $_POST["descrizione"];
     $luogo = $_POST["luogo"];
-    $durata = $_POST["durata"];
-    $punti_segnati = $_POST["punti_segnati"];
-    $errori = $_POST["errori"];
-    
-   
 
-    // Connettiti al database
-    $mydb = new mysqli(SERVER, UTENTE, PASSWORD, DATABASE);
-    if ($mydb->connect_errno) {
-        echo "Errore nella connessione a MySQL: (" . $mydb->connect_errno . ") " . $mydb->connect_error;
-        exit();
+    $errore = '';
+
+    if (empty($tipo)) {
+        $errore .= "tipo";
     }
-   
-   
 
-    // Prepara la query di inserimento per l'evento
-    $sql_evento = "INSERT INTO evento (tipo, data_ora_inizio, descrizione, luogo, durata) VALUES (?, ?, ?, ?, ?)";
-    
-    // Prepara e esegui la dichiarazione preparata per l'evento
-    if ($stmt_evento = $mydb->prepare($sql_evento)) {
-        $stmt_evento->bind_param("sssss",  $tipo, $data_ora_inizio, $descrizione, $luogo, $durata);
-        // Esegui la query di inserimento per l'evento
-        if ($stmt_evento->execute()) {
-            // Recupera l'ID dell'evento appena inserito
-            $id_evento = $mydb->insert_id;
+    if (empty($data_ora_inizio)) {
+        $errore .=  ' data_ora_inizio';
+    }
 
-            // Prepara la query di inserimento per la tabella partecipa
-            $sql_partecipa = "INSERT INTO partecipa (fkEvento, fkAtleta, punti_segnati, errori, percentuale_successo) VALUES (?, ?, ?, ?, NULL)";
+    if (empty($durata)) {
+        $errore .= ' durata';
+    }
+    if ($durata <= 0) {
+        $errore .= ' durataL';
+    }
 
-            // Prepara e esegui la dichiarazione preparata per la tabella partecipa
-            if ($stmt_partecipa = $mydb->prepare($sql_partecipa)) {
-                $stmt_partecipa->bind_param("iiis", $id_evento,$fkAtleta,  $punti_segnati, $errori);
-                if ($stmt_partecipa->execute()) {
+    if (empty($descrizione)) {
+        $errore .= ' descrizione';
+    }
 
-                    header("Location: dettagli_atleta.php?id=" . $fkAtleta);
-                    exit();
-                } else {
-                    echo "Errore durante l'inserimento nella tabella partecipa: " . $stmt_partecipa->error;
-                }
-                $stmt_partecipa->close();
-            } else {
-                echo "Errore nella preparazione della query per la tabella partecipa: " . $mydb->error;
-            }
-        } else {
-            echo "Errore durante l'inserimento dell'evento: " . $stmt_evento->error;
-        }
-        $stmt_evento->close();
+    if (empty($luogo)) {
+        $errore .= ' luogo';
+    }
+
+    if (!empty($errore)) {
+        echo json_encode(array('type' => 'Param_Error', 'value' => $errore));
     } else {
-        echo "Errore nella preparazione della query per l'evento: " . $mydb->error;
+        // Connettiti al database
+        $mydb = new mysqli(SERVER, UTENTE, PASSWORD, DATABASE);
+        if ($mydb->connect_errno) {
+            echo json_encode(array('type' => 'Error', 'value' => "Errore nella connessione a MySQL: (" . $mydb->connect_errno . ") " . $mydb->connect_error));
+            exit();
+        }
+
+        // Prepara la query di inserimento
+        $sql = "INSERT INTO evento (tipo, data_ora_inizio, descrizione, luogo, durata) VALUES ('" . $tipo . "', '" . $data_ora_inizio . "', '" . $descrizione . "', '" . $luogo . "', " . $durata . ")";
+        if ($mydb->query($sql)) {
+            //         // Inserimento riuscito, reindirizza alla pagina dell'elenco degli atleti
+            //         // header("Location: elenco_atleti.php");
+            echo json_encode(array('type' => 'Success', 'value' => 'Evento inserito con successo'));
+            //         exit();
+        } else {
+            echo json_encode(array('type' => 'Error', 'value' => "Errore durante l'inserimento dell'evento: " . $stmt->error));
+        }
+        // Chiudi la connessione al database
+        $mydb->close();
     }
-
-    // Chiudi la connessione al database
-    $mydb->close();
 }
-?>
-
-?>

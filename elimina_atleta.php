@@ -13,13 +13,18 @@ if (isset($_POST['id'])) {
     // Prendi l'ID dell'atleta dall'input
     $id_atleta = $mydb->real_escape_string($_POST['id']);
 
-    // Prima di eliminare l'atleta, eliminiamo i record correlati nella tabella partecipa
+    // Prima di eliminare l'atleta, eliminiamo i record correlati nella tabella partecipa e anche i sui infortuni
     $sql_elimina_partecipazioni = "DELETE FROM partecipa WHERE fkAtleta = '$id_atleta'";
     if ($mydb->query($sql_elimina_partecipazioni)) {
         // Ora possiamo eliminare l'atleta
         $sql_elimina_atleta = "DELETE FROM atleta WHERE id = '$id_atleta'";
         if ($mydb->query($sql_elimina_atleta)) {
-            echo json_encode(array('type' => 'Success', 'value' => "Atleta eliminato con successo."));
+            $sql_elimina_infortuni = "DELETE FROM informazioni_mediche WHERE fkAtleta = '$id_atleta'";
+            if ($mydb->query($sql_elimina_infortuni)) {
+                echo json_encode(array('type' => 'Success', 'value' => "Atleta eliminato con successo."));
+            } else {
+                echo json_encode(array('type' => 'Error', 'value' => "Errore durante l'eliminazione dell'atleta: " . $mydb->error));
+            }
         } else {
             echo json_encode(array('type' => 'Error', 'value' => "Errore durante l'eliminazione dell'atleta: " . $mydb->error));
         }

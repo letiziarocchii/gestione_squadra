@@ -165,9 +165,9 @@ input {
 .Main__body .form {
   padding: 50px 0;
 }
-.Main__body .form input[type="text"],
-.Main__body .form input[type="datetime-local"],
-.Main__body .form input[type="date"] {
+input[type="text"],
+input[type="datetime-local"],
+input[type="date"] {
   height: 30px;
   padding-left: 5px;
 }
@@ -192,6 +192,7 @@ input {
   margin-top: 2px;
 }
 
+a,
 .form a {
   margin-top: 10px;
 }
@@ -207,8 +208,9 @@ input {
   color: red;
 }
 
+.table_link,
 .Eventi li a {
-  color: var(--color);
+  color: var(--color) !important;
 }
 
 table {
@@ -245,20 +247,24 @@ input[type="number"] {
   padding-left: 5px;
 }
 
-.Stats__action .Button {
+.Stats__action .Button,
+.Injury__action .Button {
   justify-content: center;
   padding: 0;
 }
 
+.Injury__action .Button img,
 .Stats__action .Button img {
   width: 20px;
   padding-right: 0;
 }
 
+.Injury__action .Button:not(:first-child),
 .Stats__action .Button:not(:first-child) {
   margin-left: 15px;
 }
 
+.Injury__action,
 .Stats__action {
   background-color: var(--button-primary);
   color: white;
@@ -272,11 +278,55 @@ input[type="number"] {
 }
 
 .Stats__add_inputs,
+.Injury__add_inputs,
+.Injury__action_state_2,
 .Stats__action_state_2 {
   display: none;
 }
 
+.tbl_inj_input,
 .tbl_stat_input {
   display: none !important;
   background-color: #e5e596;
+}
+
+.Container__atleta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  border: 1px solid var(--blu);
+  border-radius: 10px;
+}
+
+.Container__atleta .Main__body {
+  border: none;
+}
+
+.Container__atleta .Dettagli_Atleta,
+.Container__atleta .infortuni {
+  /* width: 50%; */
+  height: 100%;
+}
+
+.Container__atleta .Dettagli_Atleta {
+  display: flex;
+  width: 30%;
+}
+
+.infortuni {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70%;
+}
+
+@media (max-width: 1150px) {
+  .Container__atleta {
+    flex-direction: column;
+  }
+
+  .Container__atleta .Dettagli_Atleta,
+  .infortuni {
+    width: 100%;
+  }
 }

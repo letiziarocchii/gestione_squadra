@@ -8,7 +8,7 @@ if ($q !== "") {
     $q = strtolower($q);
     $len = strlen($q);
     foreach ($_SESSION["atleti"] as $row) {
-        if (str_contains($row[1], $q) || str_contains($row[2], $q)) {
+        if (stripos($row[1], $q) || stripos($row[2], $q)) {
             array_push($filtered, $row);
         }
     }
